@@ -1,0 +1,25 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    concurrent-ruby (1.0.2)
+    dry-equalizer (0.2.0)
+    rom-mapper (0.4.0)
+      dry-equalizer (~> 0.2)
+      rom-support (~> 2.0.0)
+      transproc (~> 0.4.0)
+    rom-support (2.0.0)
+      concurrent-ruby (~> 1.0)
+      dry-equalizer (~> 0.2)
+      transproc (~> 0.4.0)
+      wisper (~> 1.6, >= 1.6.0)
+    transproc (0.4.0)
+    wisper (1.6.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rom-mapper (~> 0.4.0)
+
+BUNDLED WITH
+   1.12.5
