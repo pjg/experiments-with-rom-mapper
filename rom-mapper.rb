@@ -6,6 +6,27 @@ class BigDecimal
   end
 end
 
+class Gateway
+  def get_authors
+    [
+      {
+        'name' => 'John Doe',
+
+        'books' => [
+          {
+            'title' => 'First book',
+            'price' => '15.99',
+          },
+          {
+            'title' => 'Second book',
+            'price' => '18.99',
+          },
+        ]
+      }
+    ]
+  end
+end
+
 class Preprocessor < ROM::Mapper
   symbolize_keys true
 
@@ -14,7 +35,6 @@ class Preprocessor < ROM::Mapper
   attribute :name
 
   embedded :books, type: :array do
-
     model name: 'Book'
 
     attribute :title
@@ -22,27 +42,37 @@ class Preprocessor < ROM::Mapper
   end
 end
 
-input = [
-  {
-    'name' => 'John Doe',
+module Repository
+  class Authors
+    class << self
+      def all
+        @@authors ||= preprocessor.call raw_authors
+      end
 
-    'books' => [
-      {
-        'title' => 'First book',
-        'price' => '15.99',
-      },
-      {
-        'title' => 'Second book',
-        'price' => '18.99',
-      },
-    ]
-  }
-]
+      def find_by_name name
+        all.detect { |author| author.name == name }
+      end
 
+      private
 
-preprocessor = Preprocessor.build
-output = preprocessor.call(input)
+      def preprocessor
+        Preprocessor.build
+      end
 
-p output
+      def raw_authors
+        @@raw_authors ||= gateway.get_authors
+      end
 
-p output.first.name
+      def gateway
+        @@gateway ||= Gateway.new
+      end
+    end
+  end
+end
+
+authors = Repository::Authors.all
+
+p authors
+p authors.first.name
+
+p Repository::Authors.find_by_name('John Doe').name
