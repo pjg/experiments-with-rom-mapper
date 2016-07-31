@@ -1,3 +1,4 @@
+require 'ostruct'
 require 'rom-mapper'
 
 class BigDecimal
@@ -27,15 +28,32 @@ class Gateway
   end
 end
 
+class Author < OpenStruct
+  class << self
+    def find_by_name name
+      authors.detect { |author| author.name == name }
+    end
+
+    private
+
+    def authors
+      Repository::Authors.all
+    end
+  end
+end
+
+class Book < OpenStruct
+end
+
 class Preprocessor < ROM::Mapper
   symbolize_keys true
 
-  model name: 'Author'
+  model Author
 
   attribute :name
 
   embedded :books, type: :array do
-    model name: 'Book'
+    model Book
 
     attribute :title
     attribute :price, type: :decimal
@@ -47,10 +65,6 @@ module Repository
     class << self
       def all
         @@authors ||= preprocessor.call raw_authors
-      end
-
-      def find_by_name name
-        all.detect { |author| author.name == name }
       end
 
       private
@@ -75,4 +89,4 @@ authors = Repository::Authors.all
 p authors
 p authors.first.name
 
-p Repository::Authors.find_by_name('John Doe').name
+p Author.find_by_name('John Doe').name
