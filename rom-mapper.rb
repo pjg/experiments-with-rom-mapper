@@ -30,6 +30,10 @@ end
 
 class Author < OpenStruct
   class << self
+    def all
+      authors
+    end
+
     def find_by_name name
       authors.detect { |author| author.name == name }
     end
@@ -84,7 +88,7 @@ module Repository
   end
 end
 
-authors = Repository::Authors.all
+authors = Author.all
 
 p authors
 p authors.first.name
