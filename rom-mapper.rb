@@ -68,10 +68,22 @@ module Repository
   class Authors
     class << self
       def all
-        @@authors ||= preprocessor.call raw_authors
+        @@authors ||= backreferenced_authors
       end
 
       private
+
+      def backreferenced_authors
+        processed_authors.each do |author|
+          author.books.each do |book|
+            book.author = author
+          end
+        end
+      end
+
+      def processed_authors
+        preprocessor.call raw_authors
+      end
 
       def preprocessor
         Preprocessor.build
@@ -92,5 +104,6 @@ authors = Author.all
 
 p authors
 p authors.first.name
+p authors.first.books.first.author.name
 
 p Author.find_by_name('John Doe').name
